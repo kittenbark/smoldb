@@ -154,7 +154,7 @@ func (smol *Smol[Key, Value]) unsyncLoad() (err error) {
 			return err
 		}
 	}
-	if stat != nil && stat.ModTime().After(smol.synced) {
+	if stat != nil && !smol.synced.IsZero() && stat.ModTime().After(smol.synced) {
 		return nil
 	}
 

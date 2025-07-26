@@ -9,6 +9,40 @@ import (
 	"testing"
 )
 
+func TestSmol_Load(t *testing.T) {
+	const testdata = `
+1:
+  first: 1
+  second: two
+2:
+  first: 2
+  second: three
+`
+	if err := os.WriteFile("smol_load.yaml", []byte(testdata), 0777); err != nil {
+		t.Fatal(err)
+	}
+
+	type Data struct {
+		First  int    `json:"first"`
+		Second string `json:"second"`
+	}
+
+	smol, err := smoldb.New[int, Data]("smol_load.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, err := smol.Get(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first.First != 1 {
+		t.Errorf("First expected 1, got %d", first.First)
+	}
+	if first.Second != "two" {
+		t.Errorf("First expected two, got %s", first.Second)
+	}
+}
+
 func TestSmolStringString(t *testing.T) {
 	smol, err := smoldb.New[string, string]("test_1.yaml")
 	defer func() {
